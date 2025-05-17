@@ -23,5 +23,13 @@ namespace SL
         {
             return _services.GetValueOrDefault(typeof(T));
         }
+
+        public static bool TryGetService<T>(out object instance) where T : IService
+        {
+            if (_services.TryGetValue(typeof(T), out instance))
+                return true;
+            
+            return false;
+        }
     }
 }
