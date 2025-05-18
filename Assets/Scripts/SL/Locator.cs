@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace SL
 {
@@ -10,12 +11,21 @@ namespace SL
         
         public static IReadOnlyDictionary<Type, object> Services => _services;
 
-        public static void Register<T>(T instance) where T : IService
+        public static void Register(Type type, object instance)
         {
-            var type = instance.GetType();
             _services[type] = instance;
+
+            foreach (var service in _services)
+            {
+                Debug.Log($"Services Type: {service.Key} and Services Value: {service.Value}");
+            }
         }
 
+        public static void Register<T>(object instance) where T : IService
+        {
+            _services[typeof(T)] = instance;
+        }
+        
         public static bool UnRegister(Type service)
         {
             return _services.Remove(service);
@@ -23,7 +33,10 @@ namespace SL
 
         public static T Resolve<T>() where T : IService
         {
-            return _services.TryGetValue(typeof(T), out var instance) ? (T)instance : default;
+            if (_services.TryGetValue(typeof(T), out var instance))
+                return (T)instance;
+
+            return default;
         }
 
         public static bool TryGetService<T>(out object instance) where T : IService
@@ -32,6 +45,11 @@ namespace SL
                 return true;
             
             return false;
+        }
+
+        public static void Clear()
+        {
+            _services.Clear();
         }
     }
 }
