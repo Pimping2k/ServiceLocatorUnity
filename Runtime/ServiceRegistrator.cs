@@ -29,7 +29,11 @@ namespace MyPackage.Runtime.Registrators
             {
                 if (instance is IService service)
                 {
-                    var interfaces = service.GetType().GetInterfaces()
+                    var serviceType = service.GetType();
+            
+                    ServiceLocator.Register(serviceType, service);
+
+                    var interfaces = serviceType.GetInterfaces()
                         .Where(i => typeof(IService).IsAssignableFrom(i) && i != typeof(IService));
 
                     foreach (var iface in interfaces)
