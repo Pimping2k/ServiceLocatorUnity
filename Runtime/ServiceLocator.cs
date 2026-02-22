@@ -12,17 +12,20 @@ namespace MyPackage.Runtime.ServiceLocator_Core
 
         public static void Register(Type type, object instance)
         {
-            _services[type] = instance;
-
-            foreach (var service in _services)
+            if (_services.TryAdd(type, instance))
             {
-                Debug.Log($"Services Type: {service.Key} and Services Value: {service.Value}");
+                Debug.Log($"[ServiceLocator] Registered: {type.Name}");
+            }
+            else
+            {
+                _services[type] = instance;
+                Debug.LogWarning($"[ServiceLocator] Service {type.Name} was overwritten.");
             }
         }
 
-        public static void Register<T>(object instance) where T : IService
+        public static void Register<T>(T instance) where T : class
         {
-            _services[typeof(T)] = instance;
+            Register(typeof(T), instance);
         }
         
         public static bool UnRegister(Type service)
@@ -30,19 +33,24 @@ namespace MyPackage.Runtime.ServiceLocator_Core
             return _services.Remove(service);
         }
 
-        public static T Resolve<T>() where T : IService
+        public static T Resolve<T>() where T : class
         {
             if (_services.TryGetValue(typeof(T), out var instance))
                 return (T)instance;
 
-            return default;
+            Debug.LogError($"[ServiceLocator] Service of type {typeof(T).Name} not found!");
+            return null;
         }
 
-        public static bool TryGetService<T>(out object instance) where T : IService
+        public static bool TryGetService<T>(out T instance) where T : class
         {
-            if (_services.TryGetValue(typeof(T), out instance))
+            if (_services.TryGetValue(typeof(T), out var obj))
+            {
+                instance = (T)obj;
                 return true;
+            }
             
+            instance = null;
             return false;
         }
 
