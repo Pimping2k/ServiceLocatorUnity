@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MyPackage.Runtime.Registrators
 {
-    [DefaultExecutionOrder(-400)]
+    [DefaultExecutionOrder(-1500)]
     public class ServiceRegistrator : MonoBehaviour
     {
         [SerializeField] private List<MonoBehaviour> _instances = new();
