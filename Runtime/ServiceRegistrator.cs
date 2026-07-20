@@ -30,6 +30,9 @@ namespace MyPackage.Runtime.Registrators
             {
                 if (instance is IService service)
                 {
+                    if (instance.gameObject != gameObject)
+                        DontDestroyOnLoad(instance.gameObject);
+                
                     var serviceType = service.GetType();
                     var interfaces = serviceType.GetInterfaces()
                         .Where(i => typeof(IService).IsAssignableFrom(i) && i != typeof(IService))
